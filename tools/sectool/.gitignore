@@ -1,0 +1,12 @@
+*.bin
+*.ext4
+./uboot/*.bin
+./uboot/*.ext4
+./tf/*.bin
+./tf/*.ext4
+./tee/*.bin
+./tee/*.ext4
+./bin2ext4/*.bin
+./bin2ext4/*.ext4
+./kdf/*.dat
+

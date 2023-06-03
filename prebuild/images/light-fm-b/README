@@ -1,0 +1,47 @@
+
+Images for light-fm-b platform are released to demonstrate security function in light-b platform. 
+
+It includes following files:
+- u-boot-with-spl.bin
+- tee.ext4
+- tf.ext4
+- boot.ext4
+- rootfs.linux.ext4
+
+Notes: tf.ext4 and tee.ext4 is made by bin2ext4 utilty with original trust_firmware.bin and tee.bin. that
+means you need to re-make them once tee.bin and trusted_firmware.bin changes.
+
+There is two case for image burn as below:
+
+1. light-b chip is raw one and never provisioned. you can ignore and go to next case if your board is already
+   burned and can boot sucdessfully. otherwise, you have to refer to BOOTROM burn method chapter5.1 in secure
+   function user manual
+
+2. light-b chip could be burned with other images directly in case of UBOOT image is integerate. you can refer
+   to UBOOT burn method chapter5.2 in secure function use manual
+
+#######################################################################################
+## Release note
+
+#date: 20230504-2
+tee:
+- commit id:
+  ee894ecf0401c27f75b77eac2f99a6ff90f051d4
+- commit note:
+  Fix(crypto): Disable all print output
+
+#date: 20230504
+tf:
+- commit id:
+  0fd548fc45819bea059cbd544613c867854b8907
+- commit note:
+  tf:platform: Mhint2 and mhint4 should also be copied from core0
+
+tee:
+- commit id:
+  e6e18e892ca72890aa90667deaa99f1b23346ab6
+- commit note:
+  Refactor(crypto): Remove compile warning
+
+
+#######################################################################################
