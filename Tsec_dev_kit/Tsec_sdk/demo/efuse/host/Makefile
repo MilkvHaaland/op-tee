@@ -1,12 +1,11 @@
-## Toolchain
-CROSS_COMPILE := /home/kjs/xuantie/Xuantie-900-gcc-elf-newlib-x86_64-V2.2.4/bin/riscv64-unknown-linux-gnu-gcc
+-include ../../config.mk
 
-CC=$(CROSS_COMPILE)
+CC=$(CROSS_COMPILE)gcc
 CFLAGS=-DxDEBUG
 LIBS=-L../../../export/tee-client/lib -lteec
-INCLUDE=-I./inc -I../../../export/tee-client/include
+INCLUDE=-I./inc -I../../../export/ta-rv64/host_include -I../../../export/tee-client/include
 
-BIN = optee_example_efuse
+BIN = efuse
 OUTDIR = ./
 SRCS:=$(wildcard *.c)
 COBJS:=$(SRCS:.c=.o)

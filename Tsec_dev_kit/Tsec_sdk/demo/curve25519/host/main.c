@@ -35,7 +35,8 @@
 #include <curve25519_derive_key.h>
 #include <stdlib.h>
 #include <tee_client_api.h>
-
+#define CURVE_25519_KEY_BITS_SIZE 256
+#define ROUNDUP(v, size) (((v) + (size - 1)) & ~(size - 1))
 struct tee_attr_packed {
 	uint32_t attr_id;
 	uint32_t a;
@@ -357,10 +358,9 @@ TEEC_Result ta_crypt_cmd_derive_key_25519(TEEC_UUID* args,void *pubkey,void *pri
 	TEEC_Context ctx;
 	TEEC_Session sess;
 	TEEC_UUID uuid = (*args);
-	int ret = 0;
     TEE_Attribute params[4] = { };
     size_t param_count = 0;
-    size_t out_size = CURVE_25519_KEY_SIZE;
+    size_t out_size = CURVE_25519_KEY_BITS_SIZE;
     size_t max_size = 256;
     TEE_OperationHandle oph = TEE_HANDLE_NULL;
     TEE_ObjectHandle key_handle = TEE_HANDLE_NULL;
@@ -470,7 +470,6 @@ int gen_key(void *pub_exp, void *priv_exp)
 	TEEC_Session sess;
 	uint8_t out[32] = {0};
 	size_t out_size = 0;
-	size_t n = 0;
 	size_t m = 0;
 	uint32_t attr_id[] = {TEE_ATTR_X25519_PUBLIC_VALUE, TEE_ATTR_X25519_PRIVATE_VALUE};
 
@@ -488,7 +487,7 @@ int gen_key(void *pub_exp, void *priv_exp)
 
 	memset(&op, 0, sizeof(op));
 	op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INPUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-	op.params[0].value.a = CURVE_25519_KEY_SIZE / 8;
+	op.params[0].value.a = CURVE_25519_KEY_BITS_SIZE / 8;
 	op.params[0].value.b = TEE_TYPE_X25519_KEYPAIR;
 
 	res = TEEC_InvokeCommand(&sess, TA_25519_CMD_GEN_KEY,
@@ -531,12 +530,12 @@ int main(int argc, char** argv)
 {
     TEEC_UUID uuid_1 = TA_25519_UUID_1;
     TEE_Result ret = TEEC_SUCCESS;
-    uint32_t pubkey1[32] = {0};
-    uint32_t privkey1[32] = {0};
-    uint32_t pubkey2[32] = {0};
-    uint32_t privkey2[32] = {0};
-    uint32_t derive_key1[32] = {0};
-    uint32_t derive_key2[32] = {0};
+    uint8_t pubkey1[32] = {0};
+    uint8_t privkey1[32] = {0};
+    uint8_t pubkey2[32] = {0};
+    uint8_t privkey2[32] = {0};
+    uint8_t derive_key1[32] = {0};
+    uint8_t derive_key2[32] = {0};
 
     /*gen 25519 key1*/
     ret = gen_key(pubkey1, privkey1);

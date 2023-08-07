@@ -1,6 +1,6 @@
 CFG_TEE_TA_LOG_LEVEL ?= 4
 
-CROSS_COMPILE=~/work/src/xuantie-tee/toolchains/riscv64/bin/riscv64-linux-gnu-
+-include ../../config.mk
 
 TA_DEV_KIT_DIR=../../../export/ta-rv64
 # The UUID for the Trusted Application

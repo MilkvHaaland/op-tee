@@ -30,7 +30,8 @@
 
 /* UUID of the AES example trusted application */
 #define TA_AES_UUID \
-	{ 0x5dbac793, 0xf574, 0x4871, { 0x8a, 0xd3, 0x04, 0x33, 0x1e, 0xc1, 0x7f, 0x24 } }
+	  { 0xfed24e05, 0xa06d, 0x49f5, \
+                { 0xad, 0x78, 0x66, 0x6d, 0x85, 0x43, 0xb7, 0x6c} }
 
 /*
  * TA_AES_CMD_PREPARE - Allocate resources for the AES ciphering
@@ -43,6 +44,8 @@
 
 #define TA_AES_ALGO_ECB			0
 #define TA_AES_ALGO_CBC			1
+#define TA_AES_ALGO_CTR			2
+#define TA_AES_ALGO_CTR			2
 #define TA_AES_ALGO_CTR			2
 
 #define TA_AES_SIZE_128BIT		(128 / 8)

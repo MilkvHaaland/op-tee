@@ -3,8 +3,7 @@
 ## parameter define 
 ####################################################################
 
-## Toolchain
-CROSS_COMPILE ?= /d/YoC_Code/tools/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.4/bin/riscv64-unknown-linux-gnu-
+-include ../../config.mk
 
 ## TEE export path
 TEEC_EXPORT ?= ../../../export/tee-client

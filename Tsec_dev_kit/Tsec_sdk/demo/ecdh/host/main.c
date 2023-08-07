@@ -128,7 +128,7 @@ TEEC_Result pack_attrs(const TEE_Attribute *attrs, uint32_t attr_count,
 		}
 
 		/* Make room for padding */
-		bl += ROUNDUP(attrs[n].content.ref.length, 4);
+		bl += ECDH_ROUNDUP(attrs[n].content.ref.length, 4);
 	}
 
 	b = calloc(1, bl);
@@ -165,7 +165,7 @@ TEEC_Result pack_attrs(const TEE_Attribute *attrs, uint32_t attr_count,
 		a[n].a = (uint32_t)(uintptr_t)(b - *buf);
 
 		/* Round up to good alignment */
-		b += ROUNDUP(attrs[n].content.ref.length, 4);
+		b += ECDH_ROUNDUP(attrs[n].content.ref.length, 4);
 	}
 
 	return TEEC_SUCCESS;
@@ -387,7 +387,6 @@ TEEC_Result ta_crypt_cmd_derive_key_ecdh(TEEC_UUID* args)
 	TEEC_Context ctx;
 	TEEC_Session sess;
 	TEEC_UUID uuid = (*args);
-	int ret = 0;
     TEE_Attribute params[4] = { };
     size_t param_count = 0;
     uint8_t out[ECC_KEY_SIZE] = {0};

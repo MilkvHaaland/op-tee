@@ -1,9 +1,9 @@
 CFG_TEE_TA_LOG_LEVEL ?= 4
 
 # The UUID for the Trusted Application
-CROSS_COMPILE=/d/YoC_Code/tools/Xuantie-900-gcc-linux-5.10.4-glibc-x86_64-V2.2.4/bin/riscv64-unknown-linux-gnu-
+-include ../../config.mk
 TA_DEV_KIT_DIR=../../../export/ta-rv64
-BINARY=8165d0ff-2186-4105-a118-ba5328e63c12
+BINARY=fed24e05-a06d-49f5-ad78-666d8543b76c
 
 -include $(TA_DEV_KIT_DIR)/mk/ta_dev_kit.mk
 

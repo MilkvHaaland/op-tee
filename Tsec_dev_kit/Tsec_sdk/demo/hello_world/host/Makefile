@@ -3,8 +3,7 @@
 ## parameter define 
 ####################################################################
 
-## Toolchain
-CROSS_COMPILE ?= /home/qbq/work/src/xuantie-tee/toolchains/riscv64/bin/riscv64-linux-gnu-
+-include ../../config.mk
 
 ## TEE export path
 TEEC_EXPORT ?= ../../../export/tee-client

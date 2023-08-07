@@ -48,6 +48,17 @@ struct attr_packed {
 	uint32_t a;
 	uint32_t b;
 };
+TEE_Result ta_entry_free_operation(uint32_t param_type, TEE_Param params[4]);
+TEE_Result ta_entry_populate_transient_object(uint32_t param_type,
+					      TEE_Param params[4]);
+TEE_Result ta_entry_allocate_transient_object(uint32_t param_type,
+					      TEE_Param params[4]);
+TEE_Result ta_entry_free_transient_object(uint32_t param_type,
+					  TEE_Param params[4]);
+TEE_Result ta_entry_get_object_buffer_attribute(uint32_t param_type,
+						TEE_Param params[4]);
+TEE_Result ta_entry_set_operation_key(uint32_t param_type, TEE_Param params[4]);                  
+TEE_Result ta_entry_allocate_operation(uint32_t param_type, TEE_Param params[4]);
 
 TEE_Result TA_CreateEntryPoint(void)
 {
@@ -186,9 +197,7 @@ TEE_Result ta_entry_free_operation(uint32_t param_type, TEE_Param params[4])
 {
 	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
 
-	TEE_PARAM_TYPES
-			  (TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE);
+    (void)param_type;
 
 	TEE_FreeOperation(op);
 	return TEE_SUCCESS;
@@ -202,9 +211,7 @@ TEE_Result ta_entry_populate_transient_object(uint32_t param_type,
 	uint32_t attr_count = 0;
 	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
 
-	TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,
-			   TEE_PARAM_TYPE_MEMREF_INPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE);
+    (void)param_type;
 
 	res = unpack_attrs(params[1].memref.buffer, params[1].memref.size,
 			   &attrs, &attr_count);
@@ -222,9 +229,7 @@ TEE_Result ta_entry_allocate_transient_object(uint32_t param_type,
 	TEE_Result res = TEE_ERROR_GENERIC;
 	TEE_ObjectHandle o = TEE_HANDLE_NULL;
 
-	TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,
-			   TEE_PARAM_TYPE_VALUE_OUTPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE);
+    (void)param_type;
 
 	res = TEE_AllocateTransientObject(params[0].value.a, params[0].value.b,
 					  &o);
@@ -238,8 +243,7 @@ TEE_Result ta_entry_free_transient_object(uint32_t param_type,
 {
 	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
 
-	TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE);
+	(void)param_type;
 
 	TEE_FreeTransientObject(o);
 	return TEE_SUCCESS;
@@ -250,10 +254,7 @@ TEE_Result ta_entry_get_object_buffer_attribute(uint32_t param_type,
 {
 	TEE_ObjectHandle o = VAL2HANDLE(params[0].value.a);
 
-	TEE_PARAM_TYPES
-			  (TEE_PARAM_TYPE_VALUE_INPUT,
-			   TEE_PARAM_TYPE_MEMREF_OUTPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE);
+	(void)param_type;
 
 	return TEE_GetObjectBufferAttribute(o, params[0].value.b,
 			params[1].memref.buffer, &params[1].memref.size);
@@ -264,8 +265,7 @@ TEE_Result ta_entry_set_operation_key(uint32_t param_type, TEE_Param params[4])
 	TEE_OperationHandle op = VAL2HANDLE(params[0].value.a);
 	TEE_ObjectHandle key = VAL2HANDLE(params[0].value.b);
 
-	TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE);
+    (void)param_type;
 
 	return TEE_SetOperationKey(op, key);
 }
@@ -278,9 +278,7 @@ TEE_Result ta_entry_allocate_operation(uint32_t param_type, TEE_Param params[4])
 	TEE_Result res = TEE_ERROR_GENERIC;
 	TEE_OperationHandle op = TEE_HANDLE_NULL;
 
-	TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INOUT,
-			   TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE);
+	(void)param_type;
 	res = TEE_AllocateOperation(&op,
 				    params[0].value.b, params[1].value.a,
 				    params[1].value.b);
@@ -309,10 +307,7 @@ static TEE_Result test_derive_key(uint32_t param_types,
 	uint32_t attr_count = 0;
 	DMSG("has been called51");
 	
-	TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT,
-			   TEE_PARAM_TYPE_MEMREF_INPUT, TEE_PARAM_TYPE_NONE,
-			   TEE_PARAM_TYPE_NONE);
-	
+	(void)param_types;
 
 	res = unpack_attrs(params[1].memref.buffer, params[1].memref.size,
 			   &attrs, &attr_count);
@@ -332,6 +327,8 @@ static TEE_Result alloc_transient_object(void *session, uint32_t param_types,
 	const uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_VALUE_INPUT, TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE, TEE_PARAM_TYPE_NONE);
 	struct session25519 *sess;
 	TEE_Result res;
+
+    (void)params;
 
 	/* Get ciphering context from session ID */
 	DMSG("Session %p: allocate transient object", session);

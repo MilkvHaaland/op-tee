@@ -74,6 +74,6 @@ typedef uint32_t TEE_Result;
 #define TEE_ATTR_BIT_VALUE		TEE_ATTR_FLAG_VALUE
 typedef struct __TEE_OperationHandle *TEE_OperationHandle;
 typedef struct __TEE_ObjectHandle *TEE_ObjectHandle;
-#define ROUNDUP(v, size) (((v) + (size - 1)) & ~(size - 1))
+#define ECDH_ROUNDUP(v, size) (((v) + (size - 1)) & ~(size - 1))
 
 #endif /* __MEM_TA_H__ */

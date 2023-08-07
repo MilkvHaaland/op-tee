@@ -3,8 +3,7 @@
 ## parameter define 
 ####################################################################
 
-## Toolchain
-CROSS_COMPILE=/home/kjs/xuantie/Xuantie-900-gcc-elf-newlib-x86_64-V2.2.4/bin/riscv64-unknown-linux-gnu-
+-include ../../config.mk
 
 ## TEE export path
 TEEC_EXPORT ?= ../../../export/tee-client
@@ -24,7 +23,7 @@ CFLAGS += -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
 #Add/link other required libraries here
 LDADD += -lteec -L$(TEEC_EXPORT)/lib -lpthread
 
-BINARY = optee_example_25519
+BINARY = curve25519
 
 .PHONY: all
 all: $(BINARY)

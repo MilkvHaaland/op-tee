@@ -71,7 +71,6 @@
 #define TEE_ATTR_SECRET_VALUE               0xC0000000
 #define TEE_TYPE_GENERIC_SECRET             0xA0000000
 #define TEE_HANDLE_NULL                   0
-#define CURVE_25519_KEY_SIZE 256
 
 #define TEEC_OPERATION_INITIALIZER	{ }
 typedef uint32_t TEE_ObjectType;
@@ -80,6 +79,5 @@ typedef uint32_t TEE_Result;
 #define TEE_ATTR_BIT_VALUE		TEE_ATTR_FLAG_VALUE
 typedef struct __TEE_OperationHandle *TEE_OperationHandle;
 typedef struct __TEE_ObjectHandle *TEE_ObjectHandle;
-#define ROUNDUP(v, size) (((v) + (size - 1)) & ~(size - 1))
 
 #endif /* __MEM_TA_H__ */
