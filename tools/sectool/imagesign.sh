@@ -1,8 +1,11 @@
-#/bin/sh
+#!/bin/bash
 
 
 #version
 version=v1.0
+
+#ree sign file list
+ree_sign_file_list="Image light-a-val.dtb"
 
 #check function
 image_check=chkuboot
@@ -14,12 +17,14 @@ image_tee=tee
 image_tf=tf
 image_uboot=uboot
 image_ree=ree
+image_sbmeta=sbmeta
 
-# image name 
+# image name
 image_tee_name=tee.bin
 image_tf_name=trust_firmware.bin
 image_uboot_name=u-boot-with-spl.bin
 image_ree_name=boot.ext4
+image_sbmeta_name=sbmeta.bin
 
 # signed image prefix
 prefix_signed_ia_nor=signed_ia_nor_
@@ -33,12 +38,14 @@ image_tee_path=tee
 image_tf_path=tf
 image_uboot_path=uboot
 image_ree_path=ree
+image_sbmeta_path=sbmeta
 
 # image relocated address
 image_tee_addr=0x1c000000
 image_tf_addr=0x0
 image_uboot_addr=0xFFE0000800
 image_ree_addr=0x200000
+image_sbmeta_addr=0x100000
 
 # image version
 image_ver_h=0
@@ -48,7 +55,7 @@ image_ver=0
 # algorithm type
 algo_ia=ia
 algo_sm=sm
- 
+
 # image encryption attribution
 attr_enc=enc
 attr_nor=nor
@@ -83,9 +90,16 @@ function help(){
 	echo "	tf   - trust_firmware binary image"
 	echo "	tee  - tee binary image"
 	echo "	uboot - uboot binary image"
-    echo "	ree - ree binary image"
+	echo "	ree - ree binary image,sign the file list in ree/boot.ext4,just modify value of ree_sign_file_list in imagesign.sh to change the sign files"
+	echo "	sbmeta - sbmeta binary image"
 	echo "version"
 	echo "	ver - image version (x.y), eg 1.1, 2.1 "
+	echo "image board type"
+	echo "	LA  - board light A"
+	echo "	LB  - board light B"
+	echo "	LP  - board lpi4a"
+	echo "	LG  - board beagle"
+	echo "	LD  - board ant_ref"
 	echo ""
 	echo ""
 }
@@ -107,7 +121,11 @@ function image_sign_ia(){
 	echo "sign tool path: ${signtool}"
 
     local image_version=v$3_
-
+	local bid_option="-bid $4"
+	
+	if [ "$4" == "" ]; then
+		bid_option=""
+	fi
 	if [ $2 == $image_uboot ]; then
 		if [ $1 == $attr_nor ]; then
 			local infile_path=${image_uboot_path}/${image_uboot_name}
@@ -124,6 +142,7 @@ function image_sign_ia(){
 			-pvk keystore/${thead_root_private_cert} \
 			-pubk keystore/${thead_root_public_cert} -ss RSA2048 -ds SHA256 \
 			-npubk keystore/${thead_b1_public_cert} -nss RSA2048 -nds SHA256 \
+			$bid_option \
 			-o ${outfile_h_path}
 
 			#Generate BL1
@@ -132,6 +151,7 @@ function image_sign_ia(){
 			-npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
 			-iv $image_ver \
 			-ra $image_uboot_addr \
+			$bid_option \
 			-o ${outfile_i_path}
 
 			#Combine the above two img 
@@ -152,6 +172,7 @@ function image_sign_ia(){
 			-pvk keystore/${thead_root_private_cert} \
 			-pubk keystore/${thead_root_public_cert} -ss RSA2048 -ds SHA256 \
 			-npubk keystore/${thead_b1_public_cert} -nss RSA2048 -nds SHA256 \
+			$bid_option \
 			-o ${outfile_h_path}
 
 			#Generate BL1
@@ -161,6 +182,7 @@ function image_sign_ia(){
 			-ent AES_256_CBC -enk keystore/aes_256_cbc.key \
 			-iv $image_ver \
 			-ra $image_uboot_addr \
+			$bid_option \
 			-o ${outfile_i_path}
 
 			#Combine the above two img 
@@ -244,53 +266,88 @@ function image_sign_ia(){
 			echo "Error in operation !"
 			exit
 		fi
+	elif [ $2 == $image_sbmeta ]; then
+		if [ $1 == $attr_nor ]; then
+			local infile_path=${image_sbmeta_path}/${image_sbmeta_name}
+			local outfile_path=${image_sbmeta_path}/${prefix_signed_ia_nor}${image_version}${image_sbmeta_name}
+			echo "Original file: ${infile_path}"
+			echo "Signed file: ${outfile_path}"
+			echo "Image Version: $image_ver"
+			echo "Relocate Addr: $image_sbmeta_addr"
+
+			$signtool sigx ${infile_path} \
+			-pvk keystore/${client_private_cert} -ss RSA2048  -ds SHA256 \
+			-npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
+			-iv $image_ver \
+			-ra $image_sbmeta_addr \
+			-o ${outfile_path}
+		elif [ $1 == $attr_enc ]; then
+			local infile_path=${image_sbmeta_path}/${image_sbmeta_name}
+			local outfile_path=${image_sbmeta_path}/${prefix_signed_ia_enc}${image_version}${image_sbmeta_name}
+			echo "Original file: ${infile_path}"
+			echo "Signed file: ${outfile_path}"
+			echo "Image Version: $image_ver"
+			echo "Relocate Addr: $image_sbmeta_addr"
+
+			$signtool sigx ${infile_path} \
+			-pvk keystore/${client_private_cert} -ss RSA2048  -ds SHA256 \
+			-npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
+			-ent AES_256_CBC -enk keystore/aes_256_cbc.key \
+			-iv $image_ver \
+			-ra $image_sbmeta_addr \
+			-o ${outfile_path}
+
+		else
+			echo "Error in operation !"
+			exit
+		fi
     elif [ $2 == $image_ree ]; then
         sudo rm -rf bootimg
         mkdir -p bootimg
         sudo mount ${image_ree_path}/${image_ree_name} bootimg
 
-        local image_path=bootimg/Image
+        for image_ree_name in ${ree_sign_file_list}; do
+			local image_path=bootimg/${image_ree_name}
+			if [ $1 == $attr_nor ]; then
+				local infile_path=$image_path
+				local outfile_path=${image_ree_path}/${prefix_signed_ia_nor}${image_version}Image
+				echo "Original file: ${infile_path}"
+				echo "Signed file: ${outfile_path}"
+				echo "Image Version: $image_ver"
+				echo "Relocate Addr: $image_ree_addr"
 
-        if [ $1 == $attr_nor ]; then
-            local infile_path=$image_path
-            local outfile_path=${image_ree_path}/${prefix_signed_ia_nor}${image_version}Image
-            echo "Original file: ${infile_path}"
-            echo "Signed file: ${outfile_path}"
-            echo "Image Version: $image_ver"
-            echo "Relocate Addr: $image_ree_addr"
+				$signtool sigx ${infile_path} \
+				-pvk keystore/${client_private_cert} -ss RSA2048  -ds SHA256 \
+				-npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
+				-iv $image_ver \
+				-ra $image_ree_addr \
+				-o ${outfile_path}
 
-            $signtool sigx ${infile_path} \
-            -pvk keystore/${client_private_cert} -ss RSA2048  -ds SHA256 \
-            -npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
-            -iv $image_ver \
-            -ra $image_ree_addr \
-            -o ${outfile_path}
+				sudo cp $outfile_path $image_path
 
-            sudo cp $outfile_path $image_path
+			elif [ $1 == $attr_enc ]; then
+				local infile_path=$image_path
+				local outfile_path=${image_ree_path}/${prefix_signed_ia_enc}${image_version}Image
+				echo "Original file: ${infile_path}"
+				echo "Signed file: ${outfile_path}"
+				echo "Image Version: $image_ver"
+				echo "Relocate Addr: $image_ree_addr"
 
-        elif [ $1 == $attr_enc ]; then
-            local infile_path=$image_path
-            local outfile_path=${image_ree_path}/${prefix_signed_ia_enc}${image_version}Image
-            echo "Original file: ${infile_path}"
-            echo "Signed file: ${outfile_path}"
-            echo "Image Version: $image_ver"
-            echo "Relocate Addr: $image_ree_addr"
+				$signtool sigx ${infile_path} \
+				-pvk keystore/${client_private_cert} -ss RSA2048  -ds SHA256 \
+				-npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
+				-ent AES_256_CBC -enk keystore/aes_256_cbc.key \
+				-iv $image_ver \
+				-ra $image_ree_addr \
+				-o ${outfile_path}
+			
+				sudo cp $outfile_path $image_path
+			else
+				echo "Error in operation !"
+				exit
 
-            $signtool sigx ${infile_path} \
-            -pvk keystore/${client_private_cert} -ss RSA2048  -ds SHA256 \
-            -npubk keystore/${client_public_cert} -nss RSA2048  -nds SHA256 \
-            -ent AES_256_CBC -enk keystore/aes_256_cbc.key \
-            -iv $image_ver \
-            -ra $image_ree_addr \
-            -o ${outfile_path}
-        
-            sudo cp $outfile_path $image_path
-        else
-            echo "Error in operation !"
-            exit
-
-        fi
-
+			fi
+        done
         sudo umount bootimg
 	else
 		echo "Panic ..."
@@ -308,7 +365,11 @@ function image_sign_sm(){
 	echo "sign tool path: ${signtool}"
     
     local image_version=v$3_
-
+	local bid_option="-bid $4"
+	
+	if [ "$4" == "" ]; then
+		bid_option=""
+	fi
 	if [ $2 == $image_uboot ]; then
 		if [ $1 == $attr_nor ]; then
 			local infile_path=${image_uboot_path}/${image_uboot_name}
@@ -325,6 +386,7 @@ function image_sign_sm(){
 			-pvk keystore_sm/${thead_root_private_cert} \
 			-pubk keystore_sm/${thead_root_public_cert} -ss SM2 -ds SM3 \
 			-npubk keystore_sm/${thead_b1_public_cert} -nss SM2 -nds SM3 \
+			$bid_option \
 			-o ${outfile_h_path}
 
 			#Generate BL1
@@ -333,6 +395,7 @@ function image_sign_sm(){
 			-npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
 			-iv $image_ver \
 			-ra $image_uboot_addr \
+			$bid_option \
 			-o ${outfile_i_path}
 
 			#Combine the above two img 
@@ -353,6 +416,7 @@ function image_sign_sm(){
 			-pvk keystore_sm/${thead_root_private_cert} \
 			-pubk keystore_sm/${thead_root_public_cert} -ss SM2 -ds SM3 \
 			-npubk keystore_sm/${thead_b1_public_cert} -nss SM2 -nds SM3 \
+			$bid_option \
 			-o ${outfile_h_path}
 
 			#Generate BL1
@@ -362,6 +426,7 @@ function image_sign_sm(){
 			-ent SM4_CBC -enk keystore_sm/sm4.key \
 			-iv $image_ver \
 			-ra $image_uboot_addr \
+			$bid_option \
 			-o ${outfile_i_path}
 
 			#Combine the above two img 
@@ -440,7 +505,7 @@ function image_sign_sm(){
 			-iv $image_ver \
 			-ra $image_tf_addr \
 			-o ${outfile_path}
-		
+
 		else
 			echo "Error in operation !"
 			exit
@@ -450,49 +515,85 @@ function image_sign_sm(){
         mkdir -p bootimg
         sudo mount ${image_ree_path}/${image_ree_name} bootimg
 
-        local image_path=bootimg/Image
+        for image_ree_name in ${ree_sign_file_list}; do
+			local image_path=bootimg/${image_ree_name}
 
-        if [ $1 == $attr_nor ]; then
-            local infile_path=$image_path
-            local outfile_path=${image_ree_path}/${prefix_signed_sm_nor}${image_version}Image
-            echo "Original file: ${infile_path}"
-            echo "Signed file: ${outfile_path}"
-            echo "Image Version: $image_ver"
-            echo "Relocate Addr: $image_ree_addr"
+			if [ $1 == $attr_nor ]; then
+				local infile_path=$image_path
+				local outfile_path=${image_ree_path}/${prefix_signed_sm_nor}${image_version}Image
+				echo "Original file: ${infile_path}"
+				echo "Signed file: ${outfile_path}"
+				echo "Image Version: $image_ver"
+				echo "Relocate Addr: $image_ree_addr"
 
-            $signtool sigx ${infile_path} \
-            -pvk keystore_sm/${client_private_cert} -ss SM2  -ds SM3 \
-            -npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
-            -iv $image_ver \
-            -ra $image_ree_addr \
-            -o ${outfile_path}
+				$signtool sigx ${infile_path} \
+				-pvk keystore_sm/${client_private_cert} -ss SM2  -ds SM3 \
+				-npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
+				-iv $image_ver \
+				-ra $image_ree_addr \
+				-o ${outfile_path}
 
-            sudo cp $outfile_path $image_path
+				sudo cp $outfile_path $image_path
 
-        elif [ $1 == $attr_enc ]; then
-            local infile_path=$image_path
-            local outfile_path=${image_ree_path}/${prefix_signed_sm_enc}${image_version}Image
-            echo "Original file: ${infile_path}"
-            echo "Signed file: ${outfile_path}"
-            echo "Image Version: $image_ver"
-            echo "Relocate Addr: $image_ree_addr"
+			elif [ $1 == $attr_enc ]; then
+				local infile_path=$image_path
+				local outfile_path=${image_ree_path}/${prefix_signed_sm_enc}${image_version}Image
+				echo "Original file: ${infile_path}"
+				echo "Signed file: ${outfile_path}"
+				echo "Image Version: $image_ver"
+				echo "Relocate Addr: $image_ree_addr"
 
-            $signtool sigx ${infile_path} \
-            -pvk keystore_sm/${client_private_cert} -ss SM2  -ds SM3 \
-            -npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
-            -ent SM4_CBC -enk keystore_sm/sm4.key \
-            -iv $image_ver \
-            -ra $image_ree_addr \
-            -o ${outfile_path}
+				$signtool sigx ${infile_path} \
+				-pvk keystore_sm/${client_private_cert} -ss SM2  -ds SM3 \
+				-npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
+				-ent SM4_CBC -enk keystore_sm/sm4.key \
+				-iv $image_ver \
+				-ra $image_ree_addr \
+				-o ${outfile_path}
 
-            sudo cp $outfile_path $image_path
+				sudo cp $outfile_path $image_path
 
-        else
-            echo "Error in operation !"
-            exit
-        fi
-
+			else
+				echo "Error in operation !"
+				exit
+			fi
+        done
         sudo umount bootimg
+ 	elif [ $2 == $image_sbmeta ]; then
+		if [ $1 == $attr_nor ]; then
+			local infile_path=${image_sbmeta_path}/${image_sbmeta_name}
+			local outfile_path=${image_sbmeta_path}/${prefix_signed_sm_nor}${image_version}${image_sbmeta_name}
+			echo "Original file: ${infile_path}"
+			echo "Signed file: ${outfile_path}"
+			echo "Image Version: $image_ver"
+			echo "Relocate Addr: $image_sbmeta_addr"
+
+			$signtool sigx ${infile_path} \
+			-pvk keystore_sm/${client_private_cert} -ss SM2  -ds SM3 \
+			-npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
+			-iv $image_ver \
+			-ra $image_sbmeta_addr \
+			-o ${outfile_path}
+
+		elif [ $1 == $attr_enc ]; then
+			local infile_path=${image_sbmeta_path}/${image_sbmeta_name}
+			local outfile_path=${image_sbmeta_path}/${prefix_signed_sm_enc}${image_version}${image_sbmeta_name}
+			echo "Original file: ${infile_path}"
+			echo "Signed file: ${outfile_path}"
+			echo "Image Version: $image_ver"
+			echo "Relocate Addr: $image_sbmeta_addr"
+
+			$signtool sigx ${infile_path} \
+			-pvk keystore_sm/${client_private_cert} -ss SM2  -ds SM3 \
+			-npubk keystore_sm/${client_public_cert} -nss SM2  -nds SM3 \
+			-ent SM4_CBC -enk keystore_sm/sm4.key \
+			-iv $image_ver \
+			-ra $image_sbmeta_addr \
+			-o ${outfile_path}
+		else
+			echo "Error in operation !"
+			exit
+		fi
 	else
 		echo "Panic ..."
 	fi
@@ -500,16 +601,16 @@ function image_sign_sm(){
 }
 
 function image_sign(){
-	
+
 	echo "Enter into image sign process ..."
 
 	if [ $1 == $algo_ia ]; then
 		echo "Start $3 Image ($4) signed with international algorithms with secure attr ($2)"
-		image_sign_ia $2 $3 $4
+		image_sign_ia $2 $3 $4 $5
 
 	elif [ $1 == $algo_sm ]; then
 		echo "Start $3 Image ($4) signed with china_gov algorithms with secure attr ($2)"
-		image_sign_sm $2 $3 $4
+		image_sign_sm $2 $3 $4 $5
 	fi
 
 	echo "Exit from image sign process ..."
@@ -552,22 +653,28 @@ function imagesign_main(){
 	fi
 
 	# check image file
-	if [ $3 != $image_uboot ] && [ $3 != $image_tee ] && [ $3 != $image_tf ] && [ $3 != $image_ree ]; then
+	if [ $3 != $image_uboot ] && [ $3 != $image_tee ] && [ $3 != $image_tf ] && [ $3 != $image_ree ] && [ $3 != $image_sbmeta ]; then
 		echo "Unsupported image file."
 		exit
 	fi
 
+	# check board id
+	if [ "$5" != "" ] && [ $5 != "LA" ] && [ $5 != "LB" ] && [ $5 != "LP" ] && [ $5 != "LG" ] && [ $5 != "LD" ]; then
+		echo "Unsupported board id."
+		exit
+	fi
+
 	# check version
-	# the version string must be X.Y format. we will convert to digital format for use case 
-	# 
+	# the version string must be X.Y format. we will convert to digital format for use case
+	#
 	image_ver_h=`echo $4 | awk -F . '{print $1}'`
 	image_ver_l=`echo $4 | awk -F . '{print $2}'`
- 
+
 	if [[ $image_ver_h -gt 255 ]] || [[ $image_ver_l -gt 255 ]]; then
 		echo "version nubmer must be in [0 - 255]"
 		exit
 	fi
- 
+
 	#echo "image version X.Y: ${image_ver_h}.${image_ver_l}"
 	if [ $3 == $image_uboot ]; then
         let image_ver_h=${image_ver_h}-1
@@ -583,13 +690,14 @@ function imagesign_main(){
 	echo "Secure attribution: $2"
 	echo "Image file: $3"
 	echo "Image version: $4"
+	echo "Board id: $5"
 	echo "------------------------------------"
 	# Call image sign function here
-	image_sign $1 $2 $3 $4
+	image_sign $1 $2 $3 $4 $5
 
 }
 
 # Parameters definition
 # $1 - ia
-imagesign_main $1 $2 $3 $4
+imagesign_main $1 $2 $3 $4 $5
 

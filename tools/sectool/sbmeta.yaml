@@ -1,0 +1,99 @@
+name: sbmeta_config
+description: config used to build sbmeta.bin
+version: v1.0
+
+# image config description
+#   name:
+#     file name of image in ext4,for example tee.bin
+#   device:
+#     device which use to store image
+#   partition:
+#     partition which use to store image,current partions used(number 1~6):
+#       1: table
+#       2: boot,include kernel image and dtb
+#       3: tf,trust firmware
+#       4: tee
+#       5: stash
+#       6: sbmeta
+#       7: root,rootfs
+#     if new paritions need to contact administrators to add new partitions
+#   type:
+#     type of image, it should be one of belows
+#       dtb
+#       kernel_image
+#       sbi
+#       aon_fw
+#       tf
+#       tee
+#       customer
+#   digest_scheme:
+#     type of digest schema,used to fetch hash of image file,image file path represnets in config
+#     of "image_path", it should be one of belows. Now we only support sha256 for international 
+#     digest scheme and SM3 for national digest scheme.
+#       none
+#       sha1
+#       md5
+#       sha224
+#       sha256
+#       sha384
+#       sha512
+#       sm3
+#   sign_scheme:
+#     type of digest schema, it should be one of belows. Now we only support rsa2048 for international
+#     digest scheme and SM2 for national signature scheme.
+#       none
+#       rsa1024
+#       rsa2048
+#       ecc256
+#       ecc160
+#       sm2
+#   is_image_encrypted:
+#     0:image is not encrypted 1:image is encrypted
+#   medium_type:
+#     medinum type to store image, it should be one of belows
+#       emmc
+#       sd
+#       tfcard
+#       nandflash
+#   relocated_addr:
+#     image content will be loaded to relocated_addr when
+#     image has been readed from storage by uboot
+#   image_path:
+#     local image file storage path,which default to like ./tee/tee.bin,use field algorithm of "digest_scheme"
+#     to calculate digest of the image file
+image_configs:
+  #config of trust_firmware.bin
+  -
+    name: trust_firmware.bin
+    device: 0
+    partition: 3
+    type: tf
+    digest_scheme: sha256
+    sign_scheme: rsa_2048
+    is_image_encrypted: 0
+    medium_type: emmc
+    image_path: ./tf/trust_firmware.bin #recommend to this default path 
+
+  #config of tee.bin
+  -
+    name: tee.bin
+    device: 0
+    partition: 4
+    type: tee
+    digest_scheme: sha256
+    sign_scheme: rsa_2048
+    is_image_encrypted: 0
+    medium_type: emmc
+    image_path: ./tee/tee.bin #recommend to this default path 
+
+# #config of dtb
+# -
+#   name: light-a-val.dtb
+#   device: 0
+#   partition: 2
+#   type: customer
+#   digest_scheme: sha256
+#   sign_scheme: rsa_2048
+#   is_image_encrypted: 0
+#   medium_type: emmc
+#   image_path: ./dtb/light-a-val.dtb

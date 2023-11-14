@@ -89,7 +89,7 @@
 #define CFG_DEVICE_ENUM_PTA 1
 #define CFG_DT 1
 #define CFG_DTB_MAX_SIZE 0x100000
-#define CFG_DT_ADDR 0x1f00000
+#define CFG_DT_ADDR 0x3800000
 /* CFG_EARLY_TA is not set */
 #define CFG_EARLY_TA_COMPRESS 1
 /* CFG_EMBED_DTB is not set */
@@ -177,7 +177,7 @@
 #define CFG_TA_ASLR_MIN_OFFSET_PAGES 0
 #define CFG_TA_BGET_TEST 1
 #define CFG_TA_BIGNUM_MAX_BITS 2048
-/* CFG_TA_FLOAT_SUPPORT is not set */
+#define CFG_TA_FLOAT_SUPPORT 1
 /* CFG_TA_GPROF_SUPPORT is not set */
 #define CFG_TA_MBEDTLS 1
 #define CFG_TA_MBEDTLS_MPI 1
@@ -189,7 +189,7 @@
 #define CFG_TEE_CORE_EMBED_INTERNAL_TESTS 1
 #define CFG_TEE_CORE_LOG_LEVEL 3
 /* CFG_TEE_CORE_MALLOC_DEBUG is not set */
-#define CFG_TEE_CORE_NB_CORE 4
+#define CFG_TEE_CORE_NB_CORE 1
 #define CFG_TEE_CORE_TA_TRACE 1
 #define CFG_TEE_FW_IMPL_VERSION FW_IMPL_UNDEF
 #define CFG_TEE_FW_MANUFACTURER FW_MAN_UNDEF
@@ -232,10 +232,10 @@
 /* CFG_WITH_STMM_SP is not set */
 #define CFG_WITH_SV39 1
 #define CFG_WITH_USER_TA 1
-/* CFG_WITH_VFP is not set */
-#define PLATFORM_FLAVOR light_b
+#define CFG_WITH_VFP 1
+#define PLATFORM_FLAVOR light
 #define PLATFORM_FLAVOR_LIST light light_b light_lpi4a
-#define PLATFORM_FLAVOR_light_b 1
+#define PLATFORM_FLAVOR_light 1
 #define PLATFORM_light 1
 #define _CFG_CORE_LTC_ACIPHER 1
 #define _CFG_CORE_LTC_AES 1
@@ -281,7 +281,7 @@
 #define _CFG_CORE_LTC_SM2_DSA 1
 #define _CFG_CORE_LTC_SM2_KEP 1
 #define _CFG_CORE_LTC_SM2_PKE 1
-/* _CFG_CORE_LTC_VFP is not set */
+#define _CFG_CORE_LTC_VFP 1
 #define _CFG_CORE_LTC_XTS 1
 #define _CFG_FTRACE_BUF_WHEN_FULL_shift 1
 /* _CFG_USE_DTB_OVERLAY is not set */

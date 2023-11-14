@@ -1,50 +1,55 @@
 
-demos := acipher cipher curve25519 ecdh ecdsa dsa efuse hash hello_world secure_storage trng 
+demos := acipher cipher curve25519 ecdh ecdsa dsa efuse hash hello_world secure_storage trng float
 .PHONY: all $(demos) clean
 all: $(demos)
 
-acipher: 
-	cd $@/host && make
-	cd $@/ta && make
-	
-cipher: 
-	cd $@/host && make
-	cd $@/ta && make
-	
-curve25519: 
+acipher:
 	cd $@/host && make
 	cd $@/ta && make
 
-ecdh: 
+cipher:
 	cd $@/host && make
 	cd $@/ta && make
 
-ecdsa: 
+curve25519:
 	cd $@/host && make
 	cd $@/ta && make
 
-efuse: 
-	cd $@/host && make
-
-hash: 
+ecdh:
 	cd $@/host && make
 	cd $@/ta && make
 
-hello_world: 
+ecdsa:
 	cd $@/host && make
 	cd $@/ta && make
 
-secure_storage: 
+efuse:
+	cd $@/host && make
+
+hash:
 	cd $@/host && make
 	cd $@/ta && make
 
-trng: 
+hello_world:
 	cd $@/host && make
 	cd $@/ta && make
-dsa: 
+
+secure_storage:
 	cd $@/host && make
 	cd $@/ta && make
-	
+
+trng:
+	cd $@/host && make
+	cd $@/ta && make
+
+dsa:
+	cd $@/host && make
+	cd $@/ta && make
+
+float:
+	cd $@/host && make
+	cd $@/ta && make
+
 clean:
 	for i in $(demos) ; do \
 	  if [ "$$i" = "efuse" ]; then \
@@ -53,4 +58,3 @@ clean:
 	    cd $$i/host && make clean && cd ../ta && make clean && cd ../../; \
 	  fi; \
 	done
-	

@@ -21,7 +21,7 @@ OBJS = main.o
 
 CFLAGS += -Wall -I../ta/include -I$(TEEC_EXPORT)/include -I./include
 #Add/link other required libraries here
-LDADD += -lteec -L$(TEEC_EXPORT)/lib -lpthread
+LDADD += -lteec -L$(TEEC_EXPORT)/lib/linux -lpthread
 
 BINARY = curve25519
 

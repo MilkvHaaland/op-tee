@@ -2,7 +2,7 @@
 
 CC=$(CROSS_COMPILE)gcc
 CFLAGS=-DxDEBUG
-LIBS=-L../../../export/tee-client/lib -lteec
+LIBS=-L../../../export/tee-client/lib/linux -lteec
 INCLUDE=-I./inc -I../../../export/ta-rv64/host_include -I../../../export/tee-client/include
 
 BIN = efuse
