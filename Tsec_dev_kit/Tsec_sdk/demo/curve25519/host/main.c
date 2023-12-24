@@ -576,9 +576,9 @@ int main(int argc, char** argv)
     /*check if sk is the same*/
     if (memcmp(derive_key1, derive_key2, 32) == 0) {
         printf("25519 derive key check success\r\n");
-        return -5;
     } else {
         printf("25519 derive key check error\r\n");
+        return -5;
     }
 
 	return 0;

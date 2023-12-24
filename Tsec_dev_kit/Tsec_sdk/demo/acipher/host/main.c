@@ -190,17 +190,20 @@ int main()
 	memset(out_enc, 0, sizeof(out_enc));
 
 	asymmetric_operate(&ctx, TEE_MODE_ENCRYPT, 0, rsa_data_ptx_data, RSA_TEST_KEY_SIZE/8-1, out_enc, &out_size); /*encrypt*/
-	
+
 	prepare_rsa(&ctx, RSA_NOPAD, TEE_MODE_DECRYPT, RSA_TEST_KEY_SIZE); /*set decypt mode nopadding*/
-	
+
 	set_key(&ctx,TEE_MODE_DECRYPT); /*set module and pub_exp and prv_exp of RSA*/
-	
+
 	asymmetric_operate(&ctx, TEE_MODE_DECRYPT, 0, out_enc, out_enc_size, out, &out_size); /*decypt*/
 
-	if (memcmp(rsa_data_ptx_data, out, RSA_TEST_KEY_SIZE/8-1)) /*Determine whether the decrypted data matches the plaintext*/
+	if (memcmp(rsa_data_ptx_data, out, RSA_TEST_KEY_SIZE/8-1)) {/*Determine whether the decrypted data matches the plaintext*/
 		printf("\ndecoded text differ => ERROR\n");
-	else
+		terminate_tee_session(&ctx);
+		return -1;
+	} else {
 		printf("\ndecoded text match\n");
+	}
 
 	terminate_tee_session(&ctx);
 

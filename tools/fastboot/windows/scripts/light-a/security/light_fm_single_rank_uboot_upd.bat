@@ -7,7 +7,7 @@ echo NOTE: The CMD can't return back successfully due to system reboot.
 echo Please ignore the fastboot execution status returned from fastboot. Also, 
 echo you can check reboot behavior at serial windows
 
-call:RunACmd "..\..\..\fastboot.exe flash stashuboot ..\..\..\..\..\..\prebuild\images\light-fm-a\u-boot-with-spl.bin"
+call:RunACmd "..\..\..\fastboot.exe flash stashuboot ..\..\..\..\..\..\prebuild\images\light-fm-a\u-boot-with-spl.ext4"
 
 
 pause

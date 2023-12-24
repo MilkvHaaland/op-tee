@@ -201,10 +201,13 @@ int main(void)
 	cipher_buffer(&ctx, ciph, temp, AES_TEST_BUFFER_SIZE);
 
 	/* Check decoded is the clear content */
-	if (memcmp(clear, temp, AES_TEST_BUFFER_SIZE))
+	if (memcmp(clear, temp, AES_TEST_BUFFER_SIZE)) {
 		printf("Clear text and decoded text differ => ERROR\n");
-	else
+		terminate_tee_session(&ctx);
+		return -1;
+	} else {
 		printf("Clear text and decoded text match\n");
+	}
 
 	terminate_tee_session(&ctx);
 	return 0;

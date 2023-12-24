@@ -9,4 +9,4 @@ echo "NOTE: The CMD can't return back successfully due to system reboot."
 echo "Please ignore the fastboot execution status returned from fastboot. Also, "
 echo "you can check reboot behavior at serial windows"
 
-sudo ../../../fastboot flash stashtee ../../../../../../prebuild/images/light-fm-a/tf.ext4
+sudo ../../../fastboot flash stashtee ../../../../../../prebuild/images/light-fm-a/tee.ext4

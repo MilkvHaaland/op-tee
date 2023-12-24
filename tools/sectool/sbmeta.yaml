@@ -3,6 +3,7 @@ description: config used to build sbmeta.bin
 version: v1.0
 
 # image config description
+# [Mandatory]
 #   name:
 #     file name of image in ext4,for example tee.bin
 #   device:
@@ -10,12 +11,11 @@ version: v1.0
 #   partition:
 #     partition which use to store image,current partions used(number 1~6):
 #       1: table
-#       2: boot,include kernel image and dtb
-#       3: tf,trust firmware
-#       4: tee
-#       5: stash
-#       6: sbmeta
-#       7: root,rootfs
+#       2: boot,include kerne image and dtb
+#       3: tee,include trust_firmware.bin and tee.bin
+#       4: stash
+#       5: sbmeta
+#       6: root,rootfs
 #     if new paritions need to contact administrators to add new partitions
 #   type:
 #     type of image, it should be one of belows
@@ -26,10 +26,28 @@ version: v1.0
 #       tf
 #       tee
 #       customer
-#   digest_scheme:
-#     type of digest schema,used to fetch hash of image file,image file path represnets in config
-#     of "image_path", it should be one of belows. Now we only support sha256 for international 
-#     digest scheme and SM3 for national digest scheme.
+#   algorithm:
+#     algorithm for image signing, it should be one of belows
+#       sm: national alogoritm, including sm2 and sm3
+#       ia: international algorithm, including sha256 and rsa2048
+#   is_image_encrypted:
+#       0:image is not encrypted
+#       1:image is encrypted
+#   medium_type:
+#     medinum type to store image, it should be one of belows
+#       emmc
+#       sd
+#       tfcard
+#       nandflash
+# [Optional]
+#   relocated_addr:
+#     image content will be loaded to relocated_addr when
+#     image has been readed from storage by uboot
+#   image_path:
+#     local image file storage path,which default to like ./tee/tee.bin,use field
+#     algorithm of "digest_scheme" to calculate digest of the image file
+#   checksum_scheme:
+#     algorithm for calcute image file's digest. It should be one of belows
 #       none
 #       sha1
 #       md5
@@ -38,29 +56,11 @@ version: v1.0
 #       sha384
 #       sha512
 #       sm3
-#   sign_scheme:
-#     type of digest schema, it should be one of belows. Now we only support rsa2048 for international
-#     digest scheme and SM2 for national signature scheme.
-#       none
-#       rsa1024
-#       rsa2048
-#       ecc256
-#       ecc160
-#       sm2
-#   is_image_encrypted:
-#     0:image is not encrypted 1:image is encrypted
-#   medium_type:
-#     medinum type to store image, it should be one of belows
-#       emmc
-#       sd
-#       tfcard
-#       nandflash
-#   relocated_addr:
-#     image content will be loaded to relocated_addr when
-#     image has been readed from storage by uboot
-#   image_path:
-#     local image file storage path,which default to like ./tee/tee.bin,use field algorithm of "digest_scheme"
-#     to calculate digest of the image file
+#   version:
+#     if image_path points to a valid image without secure header, sbmeta.py script
+#     will sign the image by specified algorithm and version.
+#     format: "x.y", where 0 <= x, y <= 255. "1.0" by default.
+
 image_configs:
   #config of trust_firmware.bin
   -
@@ -68,32 +68,45 @@ image_configs:
     device: 0
     partition: 3
     type: tf
-    digest_scheme: sha256
-    sign_scheme: rsa_2048
+    algorithm: nor
+    checksum_scheme: sha256
     is_image_encrypted: 0
     medium_type: emmc
-    image_path: ./tf/trust_firmware.bin #recommend to this default path 
+    image_path: ./tf/trust_firmware.bin # recommend to this default path
 
   #config of tee.bin
   -
     name: tee.bin
     device: 0
-    partition: 4
+    partition: 3
     type: tee
-    digest_scheme: sha256
-    sign_scheme: rsa_2048
+    algorithm: nor
+    checksum_scheme: sha256
     is_image_encrypted: 0
     medium_type: emmc
-    image_path: ./tee/tee.bin #recommend to this default path 
+    image_path: ./tee/tee.bin #recommend to this default path
 
-# #config of dtb
-# -
-#   name: light-a-val.dtb
-#   device: 0
-#   partition: 2
-#   type: customer
-#   digest_scheme: sha256
-#   sign_scheme: rsa_2048
-#   is_image_encrypted: 0
-#   medium_type: emmc
-#   image_path: ./dtb/light-a-val.dtb
+
+  #config of dtb
+  # -
+  #   name: light-a-val-sec.dtb
+  #   device: 0
+  #   partition: 2
+  #   type: dtb
+  #   algorithm: nor
+  #   checksum_scheme: sha256
+  #   is_image_encrypted: 1
+  #   medium_type: emmc
+  #   image_path: ./dtb/light-a-val-sec.dtb #recommend to this default path
+    
+  # #config of kernel
+  # -
+  #   name: Image
+  #   device: 0
+  #   partition: 2
+  #   type: kernel_image
+  #   algorithm: nor
+  #   checksum_scheme: sha256
+  #   is_image_encrypted: 0
+  #   medium_type: emmc
+  #   image_path: ./ree/Image #recommend to this default path

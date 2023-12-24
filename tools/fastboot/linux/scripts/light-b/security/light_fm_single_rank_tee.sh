@@ -5,4 +5,4 @@
 # This script can only be run in LINUX OS! 
 # NOT SUPPORT to flash imagess by fastboot IN MAC OS!!!
 
-sudo ../../../fastboot flash tf ../../../../../../images/light-fm-b/tf.ext4
+sudo ../../../fastboot flash tee ../../../../../../images/light-fm-b/tee.light_b.ext4

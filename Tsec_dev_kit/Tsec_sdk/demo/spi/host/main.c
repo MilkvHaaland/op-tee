@@ -723,4 +723,6 @@ int main(void)
     // if (res != TEEC_SUCCESS)
     //     errx(1, "se_hsck2_scan failed with code 0x%x", res);
     // printf("se_hsck2_scan end!\n");
+
+    return 0;
 }

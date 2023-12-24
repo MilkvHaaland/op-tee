@@ -6,7 +6,7 @@
 # NOT SUPPORT to flash imagess by fastboot IN MAC OS!!!
 
 sudo ../../../fastboot flash uboot ../../../../../../images/light-fm-b/light_fastboot_image_single_rank_sec/u-boot-with-spl.bin
-sudo ../../../fastboot flash tf ../../../../../../images/light-fm-b/tf.ext4
-sudo ../../../fastboot flash tee ../../../../../../images/light-fm-b/tee.ext4
+sudo ../../../fastboot flash sbmeta ../../../../../../images/light-fm-b/sbmeta.ext4
+sudo ../../../fastboot flash tee ../../../../../../images/light-fm-b/tee.light_b.ext4
 sudo ../../../fastboot flash boot ../../../../../../images/light-fm-b/boot.ext4
 sudo ../../../fastboot flash root ../../../../../../images/light_fm-b/rootfs.yocto.ext4

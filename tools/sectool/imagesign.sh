@@ -5,7 +5,7 @@
 version=v1.0
 
 #ree sign file list
-ree_sign_file_list="Image light-a-val.dtb"
+ree_sign_file_list="Image light-a-val-sec.dtb"
 
 #check function
 image_check=chkuboot
@@ -310,7 +310,7 @@ function image_sign_ia(){
 			local image_path=bootimg/${image_ree_name}
 			if [ $1 == $attr_nor ]; then
 				local infile_path=$image_path
-				local outfile_path=${image_ree_path}/${prefix_signed_ia_nor}${image_version}Image
+				local outfile_path=${image_ree_path}/${prefix_signed_ia_nor}${image_version}${image_ree_name}
 				echo "Original file: ${infile_path}"
 				echo "Signed file: ${outfile_path}"
 				echo "Image Version: $image_ver"
@@ -327,7 +327,7 @@ function image_sign_ia(){
 
 			elif [ $1 == $attr_enc ]; then
 				local infile_path=$image_path
-				local outfile_path=${image_ree_path}/${prefix_signed_ia_enc}${image_version}Image
+				local outfile_path=${image_ree_path}/${prefix_signed_ia_enc}${image_version}${image_ree_name}
 				echo "Original file: ${infile_path}"
 				echo "Signed file: ${outfile_path}"
 				echo "Image Version: $image_ver"
@@ -520,7 +520,7 @@ function image_sign_sm(){
 
 			if [ $1 == $attr_nor ]; then
 				local infile_path=$image_path
-				local outfile_path=${image_ree_path}/${prefix_signed_sm_nor}${image_version}Image
+				local outfile_path=${image_ree_path}/${prefix_signed_sm_nor}${image_version}${image_ree_name}
 				echo "Original file: ${infile_path}"
 				echo "Signed file: ${outfile_path}"
 				echo "Image Version: $image_ver"
@@ -537,7 +537,7 @@ function image_sign_sm(){
 
 			elif [ $1 == $attr_enc ]; then
 				local infile_path=$image_path
-				local outfile_path=${image_ree_path}/${prefix_signed_sm_enc}${image_version}Image
+				local outfile_path=${image_ree_path}/${prefix_signed_sm_enc}${image_version}${image_ree_name}
 				echo "Original file: ${infile_path}"
 				echo "Signed file: ${outfile_path}"
 				echo "Image Version: $image_ver"

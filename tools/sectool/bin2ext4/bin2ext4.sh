@@ -4,11 +4,53 @@ version=v1.0
 
 echo "bin2ext4 utility version ${version}"
 echo ""
-mkdir tmp_root
-dd if=/dev/zero of=$1 bs=1M count=8
-mkfs.ext4 $1 -O ^metadata_csum
-sudo mount -t ext4 $1  tmp_root
-sudo cp $2 ./tmp_root
+fsname=$1
+shift
+if [ ! -d "tmp_root" ]; then
+        mkdir tmp_root
+fi
+
+dd if=/dev/zero of=$fsname bs=1M count=8
+if [ ! $? -eq 0 ]; then
+        echo "fail"
+        exit 1
+fi
+
+mkfs.ext4 $fsname -O ^metadata_csum
+if [ ! $? -eq 0 ]; then
+        echo "fail"
+        exit 1
+fi
+
+sudo mount -t ext4 $fsname  tmp_root
+if [ ! $? -eq 0 ]; then
+        echo "fail"
+        exit 1
+fi
+
+for file in "$@"
+do
+        sudo cp "$file" ./tmp_root
+        if [ ! $? -eq 0 ]; then
+                echo "fail"
+                exit 1
+        fi
+done
+
 sync
+if [ ! $? -eq 0 ]; then
+        echo "fail"
+        exit 1
+fi
+
 sudo umount ./tmp_root
+if [ ! $? -eq 0 ]; then
+        echo "fail"
+        exit 1
+fi
+
 rm -fr tmp_root
+if [ ! $? -eq 0 ]; then
+        echo "fail"
+        exit 1
+fi

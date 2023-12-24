@@ -2,7 +2,7 @@
 
 @echo off
 ping 127.0.0.1 -n 5 >nul
-call:RunACmd "..\..\..\fastboot.exe flash tee ..\..\..\..\..\..\images\light-fm-b\tee.ext4"
+call:RunACmd "..\..\..\fastboot.exe flash tee ..\..\..\..\..\..\images\light-fm-b\tee.light_b.ext4"
 
 
 pause

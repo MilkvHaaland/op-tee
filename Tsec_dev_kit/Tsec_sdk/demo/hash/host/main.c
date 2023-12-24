@@ -168,19 +168,21 @@ int main()
 	prepare_tee_session(&ctx);
 
 	prepare_hash(&ctx, HASH_SHA1);
-	
+
 	out_offs = 0;
 	out_size = sizeof(out);
 	memset(out, 0, sizeof(out));
 	hash_update(&ctx, hash_data_in128, HASH_CRYPT_DATA_SIZE/2);
 	out_offs += HASH_CRYPT_DATA_SIZE/2;
-	
+
 	hash_do_final(&ctx, hash_data_in128 + out_offs, HASH_CRYPT_DATA_SIZE - HASH_CRYPT_DATA_SIZE/2, out, &out_size);
-	
-	if (memcmp(hash_sha1_hash_data128, out, HASH_SHA1_HASH_DATA_SIZE)) 
+
+	if (memcmp(hash_sha1_hash_data128, out, HASH_SHA1_HASH_DATA_SIZE))  {
 		printf("\nActual hash text and expected hash text differ => ERROR\n\n");
-	else
+		return -1;
+	} else {
 		printf("\nActual hash text and expected hash text match\n\n");
+	}
 
 	terminate_tee_session(&ctx);
 	return 0;

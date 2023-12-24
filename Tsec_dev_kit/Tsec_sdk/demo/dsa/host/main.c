@@ -214,6 +214,7 @@ int main(int argc, char *const argv[])
 	asymmetric_operate(&ctx, TEE_MODE_SIGN, 0, dsa_data_ptx_data, ptx_hash_size, out, &out_size);
 	printf("DSA signature completed\n");
 
-	
 	terminate_tee_session(&ctx);
+
+	return 0;
 }
