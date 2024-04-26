@@ -16,3 +16,4 @@ include $(LOCAL_PATH)/acipher/host/Android.mk \
 		$(LOCAL_PATH)/gpio/host/Android.mk \
 		$(LOCAL_PATH)/spi/host/Android.mk \
 		$(LOCAL_PATH)/i2c/host/Android.mk \
+		$(LOCAL_PATH)/se/host/Android.mk \

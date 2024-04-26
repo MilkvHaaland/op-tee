@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) 2023, Alibaba Group Holding Limited
+ */
+#ifndef _SCP_CFG_H_
+#define _SCP_CFG_H_
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+enum csi_scp_protocol {
+    CSI_GP211_SCP01 = 0x01,
+    CSI_GP211_SCP02,
+    CSI_GP211_SCP03,
+};
+
+/* se_n32s032jq1 uses scp03 i00 */
+enum csi_scp_impl_i {
+    CSI_GP211_SCP03_IMPL_i00 = 0x00,
+    CSI_GP211_SCP02_IMPL_i04 = 0x04,
+    CSI_GP211_SCP02_IMPL_i05 = 0x05,
+    CSI_GP211_SCP02_IMPL_i0A = 0x0A,
+    CSI_GP211_SCP02_IMPL_i0B = 0x0B,
+    CSI_GP211_SCP03_IMPL_i10 = 0x10,
+    CSI_GP211_SCP01_IMPL_i15 = 0x15,
+    CSI_GP211_SCP02_IMPL_i14 = 0x14,
+    CSI_GP211_SCP02_IMPL_i15 = 0x15,
+    CSI_GP211_SCP02_IMPL_i1A = 0x1A,
+    CSI_GP211_SCP02_IMPL_i1B = 0x1B,
+    CSI_GP211_SCP03_IMPL_i20 = 0x20,
+    CSI_GP211_SCP03_IMPL_i30 = 0x30,
+    CSI_GP211_SCP02_IMPL_i44 = 0x44,
+    CSI_GP211_SCP02_IMPL_i45 = 0x45,
+    CSI_GP211_SCP02_IMPL_i54 = 0x54,
+    CSI_GP211_SCP02_IMPL_i55 = 0x55,
+    CSI_GP211_SCP03_IMPL_i60 = 0x60,
+    CSI_GP211_SCP03_IMPL_i70 = 0x70,
+};
+
+/* se_n32s032jq1 uses scp03 0x00 0x01 0x03 */
+enum csi_scp_security_level {
+    CSI_GP211_SCP01_SECURITY_LEVEL_C_DEC_C_MAC = 0x03,
+    CSI_GP211_SCP01_SECURITY_LEVEL_C_MAC = 0x01,
+    CSI_GP211_SCP01_SECURITY_LEVEL_NO_SECURE_MESSAGING = 0x00,
+    CSI_GP211_SCP02_SECURITY_LEVEL_C_DEC_C_MAC_R_MAC = 0x13,
+    CSI_GP211_SCP02_SECURITY_LEVEL_C_MAC_R_MAC = 0x11,
+    CSI_GP211_SCP02_SECURITY_LEVEL_R_MAC = 0x10,
+    CSI_GP211_SCP02_SECURITY_LEVEL_C_DEC_C_MAC = 0x03,
+    CSI_GP211_SCP02_SECURITY_LEVEL_C_MAC = 0x01,
+    CSI_GP211_SCP02_SECURITY_LEVEL_NO_SECURE_MESSAGING = 0x00,
+    CSI_GP211_SCP03_SECURITY_LEVEL_C_DEC_C_MAC = 0x03,
+    CSI_GP211_SCP03_SECURITY_LEVEL_C_MAC = 0x01,
+    CSI_GP211_SCP03_SECURITY_LEVEL_NO_SECURE_MESSAGING = 0x00,
+    CSI_GP211_SCP03_SECURITY_LEVEL_C_DEC_R_ENC_C_MAC_R_MAC = 0x33,
+    CSI_GP211_SCP03_SECURITY_LEVEL_C_DEC_C_MAC_R_MAC = 0x13,
+    CSI_GP211_SCP03_SECURITY_LEVEL_C_DEC_C_MAC_R_ENC_R_MAC = 0x33,
+    CSI_GP211_SCP03_SECURITY_LEVEL_C_MAC_R_MAC = 0x11,
+    CSI_GP211_SCP03_SECURITY_LEVEL_R_MAC = 0x10,
+    CSI_GP211_SCP03_SECURITY_LEVEL_R_ENC_R_MAC = 0x30,
+};
+
+enum csi_scp_card_element {
+    CSI_GP211_STATUS_APPLICATIONS = 0x40,
+    CSI_GP211_STATUS_ISSUER_SECURITY_DOMAIN = 0x80,
+    CSI_GP211_STATUS_LOAD_FILES = 0x20,
+    CSI_GP211_STATUS_LOAD_FILES_AND_EXECUTABLE_MODULES = 0x10,
+};
+
+enum csi_scp_status_format {
+    CSI_GP211_STATUS_FORMAT_NEW = 0x02,
+    CSI_GP211_STATUS_FORMAT_DEPRECATED = 0x00,
+};
+
+struct csi_scp_config {
+    enum csi_scp_protocol       protocol;
+    enum csi_scp_impl_i         param_i;
+    enum csi_scp_security_level security_level;
+};
+
+struct csi_status_config {
+    enum csi_scp_card_element   card_element;
+    enum csi_scp_status_format  format;
+};
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
