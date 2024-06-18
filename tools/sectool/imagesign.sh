@@ -659,7 +659,7 @@ function imagesign_main(){
 	fi
 
 	# check board id
-	if [ "$5" != "" ] && [ $5 != "LA" ] && [ $5 != "LB" ] && [ $5 != "LP" ] && [ $5 != "LG" ] && [ $5 != "LD" ]; then
+	if [ "$5" != "" ] && [ $5 != "LA" ] && [ $5 != "LB" ] && [ $5 != "LP" ] && [ $5 != "LG" ] && [ $5 != "LD" ] && [$5 != "MM" ]; then
 		echo "Unsupported board id."
 		exit
 	fi
